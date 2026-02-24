@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="pt-BR" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SYNTHESIS - Caneta Multifuncional</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
+  <style>
+    .font-orbitron { font-family: 'Orbitron', sans-serif; }
+    .font-inter { font-family: 'Inter', sans-serif; }
+    
+    /* Gradient animation */
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    
+    .animated-gradient {
+      background: linear-gradient(-45deg, #0f172a, #1e293b, #0f172a, #1e3a5f);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+    }
+    
+    /* LED glow effect */
+    @keyframes ledGlow {
+      0%, 100% { 
+        box-shadow: 0 0 20px #00ff88, 0 0 40px #00ff88, 0 0 60px #00ff8844;
+        opacity: 1;
+      }
+      50% { 
+        box-shadow: 0 0 10px #00ff88, 0 0 20px #00ff88, 0 0 30px #00ff8844;
+        opacity: 0.7;
+      }
+    }
+    
+    .led-screen {
+      animation: ledGlow 2s ease-in-out infinite;
+    }
+    
+    /* Floating animation */
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(-5deg); }
+      50% { transform: translateY(-20px) rotate(-5deg); }
+    }
+    
+    .floating {
+      animation: float 4s ease-in-out infinite;
+    }
+    
+    /* Pen flex animation */
+    @keyframes penFlex {
+      0%, 100% { transform: rotate(-5deg) skewY(0deg); }
+      25% { transform: rotate(-3deg) skewY(2deg); }
+      75% { transform: rotate(-7deg) skewY(-2deg); }
+    }
+    
+    .pen-flex {
+      animation: penFlex 3s ease-in-out infinite;
+    }
+    
+    /* Button pulse */
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+    }
+    
+    .btn-pulse:hover {
+      animation: pulse 1s ease-in-out infinite;
+    }
+    
+    /* Confetti styles */
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      pointer-events: none;
+      z-index: 1000;
+    }
+    
+    @keyframes confettiFall {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+      }
+    }
+    
+    /* Feature card hover */
+    .feature-card {
+      transition: all 0.3s ease;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(0, 255, 136, 0.2);
+    }
+    
+    /* Success message */
+    @keyframes slideIn {
+      from {
+        transform: translateY(-100px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+    
+    .success-message {
+      animation: slideIn 0.5s ease-out;
+    }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full font-inter">
+  <div id="app-wrapper" class="h-full w-full overflow-auto animated-gradient text-white"><!-- Success Message (hidden by default) -->
+   <div id="success-message" class="fixed top-0 left-0 right-0 z-50 hidden">
+    <div class="success-message bg-emerald-500 text-white text-center py-4 px-6 shadow-lg">
+     <p class="text-lg font-semibold">🎉 Parabéns! Sua compra foi realizada com sucesso!</p>
+    </div>
+   </div><!-- Hero Section -->
+   <section class="min-h-screen flex flex-col lg:flex-row items-center justify-center px-6 py-12 gap-12"><!-- Product Info -->
+    <div class="flex-1 max-w-xl text-center lg:text-left">
+     <p class="text-emerald-400 font-semibold tracking-widest uppercase mb-4">Tecnologia Revolucionária</p>
+     <h1 id="product-name" class="font-orbitron text-5xl lg:text-7xl font-black mb-6 bg-gradient-to-r from-white via-emerald-200 to-emerald-400 bg-clip-text text-transparent">SYNTHESIS Pro</h1>
+     <p id="product-tagline" class="text-xl lg:text-2xl text-slate-300 mb-8 leading-relaxed">O futuro da escrita nas suas mãos</p><!-- Price -->
+     <div class="mb-8"><span class="text-slate-400 line-through text-lg">R$ 999,90</span> <span id="price" class="font-orbitron text-4xl lg:text-5xl font-bold text-emerald-400 ml-4">R$ 499,90</span>
+     </div><!-- CTA Button --> <button id="buy-button" onclick="handlePurchase()" class="btn-pulse bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-900 font-bold text-xl px-12 py-5 rounded-full shadow-2xl shadow-emerald-500/30 transition-all duration-300 transform hover:scale-105"> <span id="button-text">🛒 Comprar Agora</span> </button>
+     <p class="text-slate-400 text-sm mt-4">Frete grátis • Garantia de 7 anos</p>
+    </div><!-- Product Illustration -->
+    <div class="flex-1 flex justify-center items-center">
+     <div class="floating relative"><!-- Pen SVG -->
+      <svg class="pen-flex w-64 h-96 lg:w-80 lg:h-[500px]" viewbox="0 0 120 400" fill="none" xmlns="http://www.w3.org/2000/svg"><!-- Pen body with gradient --> <defs>
+        <lineargradient id="penGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+         <stop offset="0%" style="stop-color:#374151" />
+         <stop offset="50%" style="stop-color:#1f2937" />
+         <stop offset="100%" style="stop-color:#111827" />
+        </lineargradient>
+        <lineargradient id="metalGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+         <stop offset="0%" style="stop-color:#9ca3af" />
+         <stop offset="50%" style="stop-color:#e5e7eb" />
+         <stop offset="100%" style="stop-color:#9ca3af" />
+        </lineargradient>
+       </defs> <!-- Main body --> <path d="M35 50 Q30 50 30 55 L28 320 Q28 330 40 330 L80 330 Q92 330 92 320 L90 55 Q90 50 85 50 Z" fill="url(#penGradient)" stroke="#4b5563" stroke-width="1" /> <!-- Grip section (flexible) --> <rect x="32" y="200" width="56" height="80" rx="5" fill="#1f2937" stroke="#00ff88" stroke-width="0.5" opacity="0.5" /> <line x1="35" y1="210" x2="85" y2="210" stroke="#374151" stroke-width="1" /> <line x1="35" y1="225" x2="85" y2="225" stroke="#374151" stroke-width="1" /> <line x1="35" y1="240" x2="85" y2="240" stroke="#374151" stroke-width="1" /> <line x1="35" y1="255" x2="85" y2="255" stroke="#374151" stroke-width="1" /> <line x1="35" y1="270" x2="85" y2="270" stroke="#374151" stroke-width="1" /> <!-- LED Screen --> <rect class="led-screen" x="40" y="70" width="40" height="60" rx="5" fill="#001a0d" stroke="#00ff88" stroke-width="2" /> <text x="60" y="95" text-anchor="middle" fill="#00ff88" font-size="8" font-family="Orbitron">
+        12:45
+       </text> <text x="60" y="110" text-anchor="middle" fill="#00ff88" font-size="6" font-family="Orbitron">
+        READY
+       </text> <text x="60" y="122" text-anchor="middle" fill="#00ff8888" font-size="5" font-family="Orbitron">
+        ●●●●○
+       </text> <!-- Top cap --> <ellipse cx="60" cy="50" rx="28" ry="8" fill="url(#metalGradient)" /> <ellipse cx="60" cy="48" rx="20" ry="5" fill="#6b7280" /> <!-- Retractable tip area --> <rect x="45" y="330" width="30" height="15" fill="#374151" /> <path d="M50 345 L60 380 L70 345 Z" fill="url(#metalGradient)" /> <!-- Tip indicator lights --> <circle cx="48" cy="160" r="3" fill="#ff4444">
+        <animate attributename="opacity" values="1;0.3;1" dur="2s" repeatcount="indefinite" />
+       </circle> <circle cx="60" cy="160" r="3" fill="#44ff44">
+        <animate attributename="opacity" values="0.3;1;0.3" dur="2s" repeatcount="indefinite" />
+       </circle> <circle cx="72" cy="160" r="3" fill="#4444ff">
+        <animate attributename="opacity" values="1;0.3;1" dur="2s" repeatcount="indefinite" begin="0.5s" />
+       </circle> <!-- Side button --> <rect x="90" y="100" width="8" height="30" rx="2" fill="#4b5563" />
+      </svg><!-- Glow effect behind pen -->
+      <div class="absolute inset-0 bg-emerald-500/20 blur-3xl rounded-full -z-10"></div>
+     </div>
+    </div>
+   </section><!-- Features Section -->
+   <section class="py-20 px-6">
+    <h2 class="font-orbitron text-3xl lg:text-4xl font-bold text-center mb-16"><span class="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">Recursos Incríveis</span></h2>
+    <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"><!-- Feature 1: LED Display -->
+     <div class="feature-card bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-6 text-center">
+      <div class="w-16 h-16 mx-auto mb-4 bg-emerald-500/20 rounded-full flex items-center justify-center">
+       <svg class="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2" stroke-width="2" /> <path d="M7 8h4M7 12h6M7 16h2" stroke-width="2" stroke-linecap="round" />
+       </svg>
+      </div>
+      <h3 class="font-orbitron font-bold text-lg mb-2 text-emerald-300">Visor LED</h3>
+      <p class="text-slate-400 text-sm">Display digital integrado mostrando hora, bateria e modo de escrita selecionado.</p>
+     </div><!-- Feature 2: Flexible -->
+     <div class="feature-card bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-6 text-center">
+      <div class="w-16 h-16 mx-auto mb-4 bg-emerald-500/20 rounded-full flex items-center justify-center">
+       <svg class="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M4 12C4 12 8 8 12 12C16 16 20 12 20 12" stroke-width="2" stroke-linecap="round" /> <path d="M4 16C4 16 8 12 12 16C16 20 20 16 20 16" stroke-width="2" stroke-linecap="round" opacity="0.5" />
+       </svg>
+      </div>
+      <h3 class="font-orbitron font-bold text-lg mb-2 text-emerald-300">Corpo Flexível</h3>
+      <p class="text-slate-400 text-sm">Design ergonômico que se adapta perfeitamente ao formato da sua mão.</p>
+     </div><!-- Feature 3: Multiple Tips -->
+     <div class="feature-card bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-6 text-center">
+      <div class="w-16 h-16 mx-auto mb-4 bg-emerald-500/20 rounded-full flex items-center justify-center">
+       <svg class="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><circle cx="8" cy="8" r="3" stroke-width="2" /> <circle cx="16" cy="8" r="3" stroke-width="2" /> <circle cx="8" cy="16" r="3" stroke-width="2" /> <circle cx="16" cy="16" r="3" stroke-width="2" />
+       </svg>
+      </div>
+      <h3 class="font-orbitron font-bold text-lg mb-2 text-emerald-300">Pontas Retráteis</h3>
+      <p class="text-slate-400 text-sm">Múltiplas pontas intercambiáveis com sistema retrátil automático.</p>
+     </div><!-- Feature 4: Printer Tip -->
+     <div class="feature-card bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-6 text-center">
+      <div class="w-16 h-16 mx-auto mb-4 bg-emerald-500/20 rounded-full flex items-center justify-center">
+       <svg class="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><rect x="5" y="8" width="14" height="10" rx="1" stroke-width="2" /> <path d="M8 8V4h8v4" stroke-width="2" /> <path d="M8 14h8" stroke-width="2" stroke-linecap="round" /> <path d="M8 17h4" stroke-width="2" stroke-linecap="round" />
+       </svg>
+      </div>
+      <h3 class="font-orbitron font-bold text-lg mb-2 text-emerald-300">Ponta Impressora</h3>
+      <p class="text-slate-400 text-sm">Tecnologia exclusiva de micro-impressão para documentos instantâneos.</p>
+     </div>
+    </div>
+   </section><!-- Specs Section -->
+   <section class="py-16 px-6 bg-slate-900/50">
+    <div class="max-w-4xl mx-auto">
+     <h2 class="font-orbitron text-2xl font-bold text-center mb-10 text-emerald-400">Especificações Técnicas</h2>
+     <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+      <div>
+       <p class="font-orbitron text-3xl font-bold text-white">48h</p>
+       <p class="text-slate-400 text-sm">Bateria</p>
+      </div>
+      <div>
+       <p class="font-orbitron text-3xl font-bold text-white">5</p>
+       <p class="text-slate-400 text-sm">Pontas Incluídas</p>
+      </div>
+      <div>
+       <p class="font-orbitron text-3xl font-bold text-white">32g</p>
+       <p class="text-slate-400 text-sm">Peso</p>
+      </div>
+      <div>
+       <p class="font-orbitron text-3xl font-bold text-white">USB-C</p>
+       <p class="text-slate-400 text-sm">Carregamento</p>
+      </div>
+     </div>
+    </div>
+   </section><!-- Footer -->
+   <footer class="py-8 px-6 text-center border-t border-slate-800">
+    <p class="text-slate-500 text-sm">© 2024 SYNTHESIS Pro. Todos os direitos reservados.</p>
+    <p class="text-slate-600 text-xs mt-2">Produto demonstrativo</p>
+   </footer>
+  </div>
+  <script>
+    // Default configuration
+    const defaultConfig = {
+      product_name: 'FlexPen Pro',
+      product_tagline: 'O futuro da escrita nas suas mãos',
+      price: 'R$ 299,90',
+      button_text: '🛒 Comprar Agora',
+      background_color: '#0f172a',
+      accent_color: '#10b981',
+      text_color: '#f1f5f9',
+      surface_color: '#1e293b',
+      button_color: '#10b981',
+      font_family: 'Inter',
+      font_size: 16
+    };
+    
+    // Confetti function
+    function createConfetti() {
+      const colors = ['#10b981', '#14b8a6', '#06b6d4', '#f59e0b', '#ec4899', '#8b5cf6', '#ffffff'];
+      const shapes = ['square', 'circle'];
+      
+      for (let i = 0; i < 150; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const shape = shapes[Math.floor(Math.random() * shapes.length)];
+        const size = Math.random() * 10 + 5;
+        const left = Math.random() * 100;
+        const animationDuration = Math.random() * 3 + 2;
+        const animationDelay = Math.random() * 0.5;
+        
+        confetti.style.cssText = `
+          left: ${left}vw;
+          top: -20px;
+          width: ${size}px;
+          height: ${size}px;
+          background: ${color};
+          border-radius: ${shape === 'circle' ? '50%' : '2px'};
+          animation: confettiFall ${animationDuration}s ease-out ${animationDelay}s forwards;
+        `;
+        
+        document.body.appendChild(confetti);
+        
+        // Remove confetti after animation
+        setTimeout(() => {
+          confetti.remove();
+        }, (animationDuration + animationDelay) * 1000);
+      }
+    }
+    
+    // Handle purchase
+    function handlePurchase() {
+      createConfetti();
+      
+      const successMessage = document.getElementById('success-message');
+      successMessage.classList.remove('hidden');
+      
+      // Hide message after 5 seconds
+      setTimeout(() => {
+        successMessage.classList.add('hidden');
+      }, 5000);
+    }
+    
+    // Update UI based on config
+    async function onConfigChange(config) {
+      const productName = document.getElementById('product-name');
+      const productTagline = document.getElementById('product-tagline');
+      const price = document.getElementById('price');
+      const buttonText = document.getElementById('button-text');
+      
+      if (productName) productName.textContent = config.product_name || defaultConfig.product_name;
+      if (productTagline) productTagline.textContent = config.product_tagline || defaultConfig.product_tagline;
+      if (price) price.textContent = config.price || defaultConfig.price;
+      if (buttonText) buttonText.textContent = config.button_text || defaultConfig.button_text;
+      
+      // Apply font family
+      const fontFamily = config.font_family || defaultConfig.font_family;
+      document.body.style.fontFamily = `${fontFamily}, Inter, sans-serif`;
+      
+      // Apply font size scaling
+      const fontSize = config.font_size || defaultConfig.font_size;
+      if (productName) productName.style.fontSize = `${fontSize * 3}px`;
+      if (productTagline) productTagline.style.fontSize = `${fontSize * 1.25}px`;
+      
+      // Apply colors
+      const accentColor = config.accent_color || defaultConfig.accent_color;
+      const textColor = config.text_color || defaultConfig.text_color;
+      const buttonColor = config.button_color || defaultConfig.button_color;
+      
+      document.documentElement.style.setProperty('--accent', accentColor);
+      
+      if (price) price.style.color = accentColor;
+      
+      const buyButton = document.getElementById('buy-button');
+      if (buyButton) {
+        buyButton.style.background = `linear-gradient(to right, ${buttonColor}, ${adjustColor(buttonColor, 20)})`;
+      }
+    }
+    
+    // Helper function to adjust color brightness
+    function adjustColor(hex, amount) {
+      const num = parseInt(hex.replace('#', ''), 16);
+      const r = Math.min(255, Math.max(0, (num >> 16) + amount));
+      const g = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + amount));
+      const b = Math.min(255, Math.max(0, (num & 0x0000FF) + amount));
+      return `#${(1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1)}`;
+    }
+    
+    // Map config to capabilities for color/font editing
+    function mapToCapabilities(config) {
+      return {
+        recolorables: [
+          {
+            get: () => config.background_color || defaultConfig.background_color,
+            set: (value) => { config.background_color = value; window.elementSdk.setConfig({ background_color: value }); }
+          },
+          {
+            get: () => config.surface_color || defaultConfig.surface_color,
+            set: (value) => { config.surface_color = value; window.elementSdk.setConfig({ surface_color: value }); }
+          },
+          {
+            get: () => config.text_color || defaultConfig.text_color,
+            set: (value) => { config.text_color = value; window.elementSdk.setConfig({ text_color: value }); }
+          },
+          {
+            get: () => config.accent_color || defaultConfig.accent_color,
+            set: (value) => { config.accent_color = value; window.elementSdk.setConfig({ accent_color: value }); }
+          },
+          {
+            get: () => config.button_color || defaultConfig.button_color,
+            set: (value) => { config.button_color = value; window.elementSdk.setConfig({ button_color: value }); }
+          }
+        ],
+        borderables: [],
+        fontEditable: {
+          get: () => config.font_family || defaultConfig.font_family,
+          set: (value) => { config.font_family = value; window.elementSdk.setConfig({ font_family: value }); }
+        },
+        fontSizeable: {
+          get: () => config.font_size || defaultConfig.font_size,
+          set: (value) => { config.font_size = value; window.elementSdk.setConfig({ font_size: value }); }
+        }
+      };
+    }
+    
+    // Map config to edit panel values
+    function mapToEditPanelValues(config) {
+      return new Map([
+        ['product_name', config.product_name || defaultConfig.product_name],
+        ['product_tagline', config.product_tagline || defaultConfig.product_tagline],
+        ['price', config.price || defaultConfig.price],
+        ['button_text', config.button_text || defaultConfig.button_text]
+      ]);
+    }
+    
+    // Initialize Element SDK
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities,
+        mapToEditPanelValues
+      });
+    }
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d2fdc7cf1f6f19f',t:'MTc3MTk0NTUyOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
